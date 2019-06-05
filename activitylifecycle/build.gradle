@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode versionCode()
+        versionName versionName()
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -31,4 +31,40 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'ActivityLifecycle'
+
+    publishedGroupId = 'com.eshel.lib'
+    libraryName = 'ActivityLifecycle'
+    artifact = 'ActivityLifecycle'
+
+    libraryDescription = 'A library that detects the Activity lifecycle'
+
+    siteUrl = 'https://github.com/EshelGuo/ActivityLifecycle'
+    gitUrl = 'https://github.com/EshelGuo/ActivityLifecycle.git'
+
+    libraryVersion = versionName()
+
+    developerId = 'eshel'
+    developerName = 'eshel'
+    developerEmail = 'shiwen.gsw@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: 'installv1.gradle'//https://raw.githubusercontent.com/nuuneoi/JCenter/master/
+apply from: 'bintrayv1.gradle'//https://raw.githubusercontent.com/nuuneoi/JCenter/master/
+apply plugin: 'com.github.dcendents.android-maven'
+
+static def versionCode(){
+    return 1
+}
+
+static def versionName(){
+    return "1.0"
 }
