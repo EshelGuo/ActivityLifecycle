@@ -173,6 +173,12 @@ public class ActivityHelper {
 		return fragment;
 	}
 
+	/**
+	 * (像EditText这种部分控件, 会将Activity包装一层, 所以才需要此方法来拆开包装)
+	 * 将上下文递归拆开, 如果类型是 Activity, 则返回, 否则返回null
+	 * @param context 目标上下文
+	 * @return 返回结果(如果context并非Activity, 则返回null)
+	 */
 	public static Activity getActivity(Context context){
 		if(context == null)
 			return null;
@@ -197,5 +203,58 @@ public class ActivityHelper {
 		getFragment(activity)
 				.addActivityResultCallback(requestCode, callback)
 				.startActivityForResult(intent, requestCode);
+	}
+
+	/**
+	 * 清除Activity的附加字段的数据(将其置为null)
+	 * 相当于:
+	 * 		activity.key = null;
+	 * @param activity 载体Activity
+	 * @param key 数据的key值
+	 */
+	public static void clear(Activity activity, String key){
+		if(activity == null || key == null)
+			return;
+		if(activity instanceof FragmentActivity)
+			getFragment((FragmentActivity) activity).put(key, null);
+		else {
+			getOldFragment(activity).put(key, null);
+		}
+	}
+
+	/**
+	 * 给 Activity 添加额外变量而无需在Activity中定义
+	 * 相当于:
+	 * 		activity.key = value;
+	 * @param activity 载体Activity
+	 * @param key 变量的key值, 相当于变量名
+	 * @param value 变量的值
+	 */
+	public static void set(Activity activity, String key, Object value){
+		if(activity == null || key == null)
+			return;
+		if(activity instanceof FragmentActivity)
+			getFragment((FragmentActivity) activity).put(key, value);
+		else
+			getOldFragment(activity).put(key, value);
+	}
+
+	/**
+	 * 获取activity中的扩展变量
+	 * 相当于:
+	 * 		type temp = activity.key;//获取到变量后使用
+	 * @param activity 载体
+	 * @param key 相当于变量名
+	 * @param type 返回的数据的类型
+	 * @param <T> 数据类型泛型
+	 * @return 返回额外变量
+	 */
+	public static <T> T get(Activity activity, String key, Class<T> type){
+		if(activity == null || key == null)
+			return null;
+		if(activity instanceof FragmentActivity)
+			return getFragment((FragmentActivity) activity).get(key, type);
+
+		return getOldFragment(activity).get(key, type);
 	}
 }

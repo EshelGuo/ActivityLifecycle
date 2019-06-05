@@ -101,6 +101,16 @@ public class ActivityLifecycleFragment extends Fragment implements IActivityLife
 	}
 
 	@Override
+	public void put(String key, Object value) {
+		mProxy.put(key, value);
+	}
+
+	@Override
+	public <T> T get(String key, Class<T> type) {
+		return mProxy.get(key, type);
+	}
+
+	@Override
 	public Fragment getV4Fragment() {
 		return this;
 	}

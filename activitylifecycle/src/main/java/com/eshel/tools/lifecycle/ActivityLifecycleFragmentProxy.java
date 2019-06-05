@@ -9,7 +9,9 @@ import android.support.v4.app.Fragment;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * createBy Eshel
@@ -24,6 +26,8 @@ public class ActivityLifecycleFragmentProxy implements IActivityLifecycleFragmen
 	private List<ActivityLifecycle> mCallbacks = new ArrayList<>(CAPACITY);
 	private SparseArray<ActivityResultCallback> mActivityResultCallback = new SparseArray<>(CAPACITY);
 	private SparseArray<PermissionsResultCallback> mRequestPermissionCallback = new SparseArray<>(CAPACITY);
+
+	private Map<String, Object> extFields = new HashMap<>(4);
 
 	public ActivityLifecycleFragmentProxy(Provider provider) {
 		mProvider = provider;
@@ -147,6 +151,21 @@ public class ActivityLifecycleFragmentProxy implements IActivityLifecycleFragmen
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		for (ActivityLifecycle callback : mCallbacks) {
 			callback.onActivitySaveInstanceState(getActivity(), outState);
+		}
+	}
+
+	@Override
+	public void put(String key, Object value) {
+		extFields.put(key, value);
+	}
+
+	@Override
+	public <T> T get(String key, Class<T> type) {
+		try {
+			Object value = extFields.get(key);
+			return (T) value;
+		}catch (Exception e){
+			return null;
 		}
 	}
 

@@ -92,6 +92,16 @@ public class OldActivityLifecycleFragment extends Fragment implements IActivityL
 	}
 
 	@Override
+	public void put(String key, Object value) {
+		mProxy.put(key, value);
+	}
+
+	@Override
+	public <T> T get(String key, Class<T> type) {
+		return mProxy.get(key, type);
+	}
+
+	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		mProxy.onRequestPermissionsResult(requestCode, permissions, grantResults);

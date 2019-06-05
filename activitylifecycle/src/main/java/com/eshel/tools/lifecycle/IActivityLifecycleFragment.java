@@ -24,4 +24,6 @@ public interface IActivityLifecycleFragment<T extends IActivityLifecycleFragment
 	void onDestroy();
 	void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults);
 	void onSaveInstanceState(@NonNull Bundle outState);
+	void put(String key, Object value);
+	<T> T get(String key, Class<T> type);
 }
