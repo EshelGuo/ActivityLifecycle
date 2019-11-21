@@ -70,6 +70,8 @@ public class DemoView extends FrameLayout implements ActivityLifecycle{
 			@Override
 			public void onClick(View v) {
 				Activity act = ActivityHelper.getActivity(v.getContext());
+				ActivityHelper.set(act, "key", "hahahaha");
+				String hahaha = ActivityHelper.get(act, "key", String.class);
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 					ActivityHelper.requestPermissions(act, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2000);
 				}

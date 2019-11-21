@@ -62,9 +62,9 @@ apply from: 'bintrayv1.gradle'//https://raw.githubusercontent.com/nuuneoi/JCente
 apply plugin: 'com.github.dcendents.android-maven'
 
 static def versionCode(){
-    return 1
+    return 2
 }
 
 static def versionName(){
-    return "1.0"
+    return "1.1"
 }
