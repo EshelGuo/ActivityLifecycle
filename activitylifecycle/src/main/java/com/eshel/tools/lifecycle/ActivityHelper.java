@@ -22,14 +22,14 @@ import java.lang.ref.ReferenceQueue;
  */
 public class ActivityHelper {
 
-	public static final String FRAGMENT_TAG = "ACT_CALLBACK";
+	private static final ActivityLifecycleRetriever ALRetriever = new ActivityLifecycleRetriever();
 
 	/**
 	 * 注册Activity生命周期
 	 * {@link ActivityLifecycle,ActivityLifecycleAdapter}
 	 */
 	public static void registerActivityLifecycle(FragmentActivity activity, @NonNull ActivityLifecycle adapter){
-		getFragment(activity).addCallback(adapter);
+		ALRetriever.getFragment(activity).addCallback(adapter);
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class ActivityHelper {
 		if(activity instanceof  FragmentActivity)
 			registerActivityLifecycle(((FragmentActivity)activity), adapter);
 		else {
-			getOldFragment(activity).addCallback(adapter);
+			ALRetriever.getOldFragment(activity).addCallback(adapter);
 		}
 	}
 
@@ -52,7 +52,7 @@ public class ActivityHelper {
 		if(activity == null || adapter == null)
 			return;
 
-		getFragment(activity).removeCallback(adapter);
+		ALRetriever.getFragment(activity).removeCallback(adapter);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class ActivityHelper {
 		if(activity instanceof  FragmentActivity)
 			unregisterActivityLifecycle(((FragmentActivity)activity), adapter);
 		else {
-			getOldFragment(activity).removeCallback(adapter);
+			ALRetriever.getOldFragment(activity).removeCallback(adapter);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class ActivityHelper {
 	 * {@link ActivityLifecycle,ActivityLifecycleAdapter}
 	 */
 	public static void startActivityForResult(FragmentActivity activity, Intent intent, int requestCode, Bundle options){
-		getFragment(activity).startActivityForResult(intent, requestCode, options);
+		ALRetriever.getFragment(activity).startActivityForResult(intent, requestCode, options);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class ActivityHelper {
 		if(activity instanceof FragmentActivity){
 			startActivityForResult(((FragmentActivity)activity), intent, requestCode, options);
 		}else {
-			getOldFragment(activity).startActivityForResult(intent, requestCode, options);
+			ALRetriever.getOldFragment(activity).startActivityForResult(intent, requestCode, options);
 		}
 	}
 
@@ -92,7 +92,7 @@ public class ActivityHelper {
 	 * {@link ActivityLifecycle,ActivityLifecycleAdapter}
 	 */
 	public static void startActivityForResult(FragmentActivity activity, Intent intent, int requestCode){
-		getFragment(activity).startActivityForResult(intent, requestCode);
+		ALRetriever.getFragment(activity).startActivityForResult(intent, requestCode);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class ActivityHelper {
 		if(activity instanceof FragmentActivity)
 			startActivityForResult(((FragmentActivity)activity), intent, requestCode);
 		else
-			getOldFragment(activity).startActivityForResult(intent, requestCode);
+			ALRetriever.getOldFragment(activity).startActivityForResult(intent, requestCode);
 	}
 
 
@@ -117,7 +117,7 @@ public class ActivityHelper {
 			requestPermissions((FragmentActivity) activity, permissions, requestCode);
 		else {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				getOldFragment(activity).requestPermissions(permissions, requestCode);
+				ALRetriever.getOldFragment(activity).requestPermissions(permissions, requestCode);
 			}else {
 				throw new IllegalArgumentException("use method requestPermissions(), minSdkVersion must >=23, can try use android.support.v4.app.FragmentActivity replace android.app.Activity");
 			}
@@ -128,10 +128,10 @@ public class ActivityHelper {
 	public static void requestPermissions(Activity activity, String[] permissions, int requestCode, PermissionsResultCallback callback){
 		if(activity instanceof FragmentActivity) {
 			requestPermissions((FragmentActivity) activity, permissions, requestCode);
-			getFragment((FragmentActivity) activity).addPermissionResultCallback(requestCode, callback);
+			ALRetriever.getFragment((FragmentActivity) activity).addPermissionResultCallback(requestCode, callback);
 		} else {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				getOldFragment(activity)
+				ALRetriever.getOldFragment(activity)
 						.addPermissionResultCallback(requestCode, callback)
 						.requestPermissions(permissions, requestCode);
 			}else {
@@ -145,32 +145,13 @@ public class ActivityHelper {
 	 * {@link ActivityLifecycle,ActivityLifecycleAdapter}
 	 */
 	public static void requestPermissions(FragmentActivity activity, @NonNull String[] permissions, int requestCode){
-		getFragment(activity).requestPermissions(permissions, requestCode);
+		ALRetriever.getFragment(activity).requestPermissions(permissions, requestCode);
 	}
 
 	public static void requestPermissions(FragmentActivity activity, @NonNull String[] permissions, int requestCode, PermissionsResultCallback callback){
-		getFragment(activity)
+		ALRetriever.getFragment(activity)
 				.addPermissionResultCallback(requestCode, callback)
 				.requestPermissions(permissions, requestCode);
-	}
-
-	private static ActivityLifecycleFragment getFragment(FragmentActivity activity){
-		ActivityLifecycleFragment fragment = (ActivityLifecycleFragment) activity.getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-		if(fragment == null){
-			fragment = new ActivityLifecycleFragment();
-			activity.getSupportFragmentManager().beginTransaction().add(fragment, FRAGMENT_TAG).commitAllowingStateLoss();
-		}
-		return fragment;
-	}
-
-	private static OldActivityLifecycleFragment getOldFragment(Activity activity) {
-		FragmentManager fragmentManager = activity.getFragmentManager();
-		OldActivityLifecycleFragment fragment = (OldActivityLifecycleFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
-		if(fragment == null){
-			fragment = new OldActivityLifecycleFragment();
-			fragmentManager.beginTransaction().add(fragment, FRAGMENT_TAG).commitAllowingStateLoss();
-		}
-		return fragment;
 	}
 
 	/**
@@ -200,7 +181,7 @@ public class ActivityHelper {
 	 *           ** 注意: 一个 requestCode 只能对应一个 callback, 否则会丢失之前的 callback **
 	 */
 	public static void startActivityForResult(FragmentActivity activity, Intent intent, int requestCode, ActivityResultCallback callback){
-		getFragment(activity)
+		ALRetriever.getFragment(activity)
 				.addActivityResultCallback(requestCode, callback)
 				.startActivityForResult(intent, requestCode);
 	}
@@ -216,9 +197,9 @@ public class ActivityHelper {
 		if(activity == null || key == null)
 			return;
 		if(activity instanceof FragmentActivity)
-			getFragment((FragmentActivity) activity).put(key, null);
+			ALRetriever.getFragment((FragmentActivity) activity).put(key, null);
 		else {
-			getOldFragment(activity).put(key, null);
+			ALRetriever.getOldFragment(activity).put(key, null);
 		}
 	}
 
@@ -234,9 +215,9 @@ public class ActivityHelper {
 		if(activity == null || key == null)
 			return;
 		if(activity instanceof FragmentActivity)
-			getFragment((FragmentActivity) activity).put(key, value);
+			ALRetriever.getFragment((FragmentActivity) activity).put(key, value);
 		else
-			getOldFragment(activity).put(key, value);
+			ALRetriever.getOldFragment(activity).put(key, value);
 	}
 
 	/**
@@ -253,8 +234,8 @@ public class ActivityHelper {
 		if(activity == null || key == null)
 			return null;
 		if(activity instanceof FragmentActivity)
-			return getFragment((FragmentActivity) activity).get(key, type);
+			return ALRetriever.getFragment((FragmentActivity) activity).get(key, type);
 
-		return getOldFragment(activity).get(key, type);
+		return ALRetriever.getOldFragment(activity).get(key, type);
 	}
 }

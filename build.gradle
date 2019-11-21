@@ -3,7 +3,10 @@
 buildscript {
     
     repositories {
-        google()
+        maven {
+            url 'https://dl.google.com/dl/android/maven2/'
+            name 'Google'
+        }
         jcenter()
         mavenCentral()
     }
@@ -26,7 +29,10 @@ allprojects {
         options.addStringOption('charSet', 'UTF-8')
     }
     repositories {
-        google()
+        maven {
+            url 'https://dl.google.com/dl/android/maven2/'
+            name 'Google'
+        }
         jcenter()
         mavenCentral()
     }
